@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 public class SparkDB {
@@ -287,7 +288,7 @@ public class SparkDB {
 	 * @author Morad Abdelrasheed Mokhtar Ali Gill
 	 */
 	public class HMList {
-		private HashMap<Integer, String> data = new HashMap<>();
+		private LinkedHashMap<Integer, String> data = new LinkedHashMap<>();
 		private int num = 0;
 		/**
 		 * Adds an element

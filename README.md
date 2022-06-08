@@ -4,4 +4,4 @@ CSV-to-database-structure project that aims for:
 - Simple usage and commands
 - Allowing data analysis for CSV raw data
 
-Included javadoc for details on functions. Also, see `main.java`
+Included javadoc for details on functions. Also, see 'main.java' for code examples.
