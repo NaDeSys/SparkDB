@@ -16,7 +16,7 @@ SQL statements are not an optimal way to communicate with a database. If not giv
 We have decided to invent the wheel for the good. You must learn SQL in order to work with it, SparkDB is a lot simpler. You don't have to learn SparkDB in order to work with it! SparkDB is perfect for small to mid-size databases for internal systems that need to be secure enough. 
 
 ## Documentation
-You can find the documentation in *doc/index.html*. A code example is *src/main.java*
+You can find javadoc [here](https://nadesys.github.io/SparkDBDoc/SparkDB.html). A code example is *src/main.java*
 
 ## TO-DO
 - [ ] JSON Parsing beside CSV
@@ -24,7 +24,7 @@ You can find the documentation in *doc/index.html*. A code example is *src/main.
 
 ## Contributors
 !!! This section is only modified by NaDeSys. !!!<br>
-[Morad Abdelrasheed](https://github.com/Zelakolase)
+[Morad Abdelrasheed](https://github.com/Zelakolase) - [Youssef Hegazy (Indirect Suggestion, accepted)](https://github.com/hegzploit)
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/NaDeSys/SparkDB.svg)](https://starchart.cc/NaDeSys/SparkDB)
