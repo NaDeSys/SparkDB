@@ -353,7 +353,6 @@ public class SparkDB {
 			data.remove(i, data.get(i));
 			num--;
 			syncAfterIndices(i + 1);
-			System.out.println(data + "D\n\n\n");
 		}
 
 	}
