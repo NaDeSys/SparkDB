@@ -354,6 +354,15 @@ public class SparkDB {
 			num--;
 			syncAfterIndices(i + 1);
 		}
+		
+		@Override
+		public String toString() {
+			String out = "";
+			for(String value : data.values()) {
+				out += value + " ";
+			}
+			return out;
+		}
 
 	}
 }
