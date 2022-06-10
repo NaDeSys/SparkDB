@@ -17,10 +17,10 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 public class SparkDB {
-	public static HashMap<String, HMList> Mapper = new HashMap<>();
-	public static ArrayList<String> Headers = new ArrayList<>();
-	public static int num_queries = 0;
-	public static int num_header = 0;
+	public HashMap<String, HMList> Mapper = new HashMap<>();
+	public ArrayList<String> Headers = new ArrayList<>();
+	public int num_queries = 0;
+	public int num_header = 0;
 	/**
 	 * Reads CSV data from disk, then processes it.
 	 * @param filename		The filename of the CSV file. <i>./data.csv</i> to point at <b>data.csv</b> in the current directory.
