@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/NaDeSys/SparkDB)](https://github.com/NaDeSys/SparkDB/issues)
 [![GitHub issues](https://img.shields.io/badge/License-AGPLv3.0-blue)](https://github.com/NaDeSys/SparkDB/blob/main/LICENSE.txt)
 <br>CSV-to-database-structure project that aims for: 
-- Write-on-disk connection instead of network connection
+- write-on-memory connection instead of network connection
 - Simple usage and commands
 - Allowing data analysis for CSV raw data
 
