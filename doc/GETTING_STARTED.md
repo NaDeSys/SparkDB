@@ -1,5 +1,11 @@
 # Getting Started
 Before continuing, Please put **SparkDB.java** inside the package, or in *src/* directory in your project.
+- [Getting Started](#getting-started)
+  * [An example database creation with operations](#an-example-database-creation-with-operations)
+    + [Making a database](#making-a-database)
+    + [Add, get, modify, or delete entries](#add-get-modify-or-delete-entries)
+  * [Read existing database, and bulk operations](#read-existing-database-and-bulk-operations)
+
 
 ## An example database creation with operations
 ### Making a database
