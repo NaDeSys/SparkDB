@@ -16,10 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -419,9 +416,11 @@ public class SparkDB {
 		 */
 		public ArrayList<Integer> multipleGet(String in, int iter) {
 			ArrayList<Integer> out = new ArrayList<>();
-			for(int i = 0;i<this.size();i++) {
-				if(!(i<iter)) break;
-				if(in.equals(this.get(i))) out.add(i);
+			for (int i = 0; i < this.size(); i++) {
+				if (!(i < iter))
+					break;
+				if (in.equals(this.get(i)))
+					out.add(i);
 			}
 			return out;
 		}
@@ -442,9 +441,11 @@ public class SparkDB {
 		 * @param i Target Index Value
 		 * @return The String value that is linked to the input index value
 		 */
+		@Override
 		public String get(int i) {
 			return this.get(i);
 		}
+
 		/**
 		 * Deletes an element
 		 *
