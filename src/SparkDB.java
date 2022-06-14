@@ -18,6 +18,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -407,20 +409,7 @@ public class SparkDB {
 	 *
 	 * @author Morad Abdelrasheed Mokhtar Ali Gill
 	 */
-	public class HMList {
-		private LinkedHashMap<Integer, String> data = new LinkedHashMap<>();
-		private int num = 0;
-
-		/**
-		 * Adds an element
-		 *
-		 * @param in Element to be added
-		 */
-		public void add(String in) {
-			data.put(num, in);
-			num++;
-		}
-
+	public class HMList extends ArrayList<String> {
 		/**
 		 * Get multiple indices that are linked with the same String value
 		 *
@@ -430,15 +419,9 @@ public class SparkDB {
 		 */
 		public ArrayList<Integer> multipleGet(String in, int iter) {
 			ArrayList<Integer> out = new ArrayList<>();
-			int i = 0;
-			for (Entry<Integer, String> entry : data.entrySet()) {
-				if (entry.getValue().equals(in)) {
-					if (i < iter) {
-						out.add(entry.getKey());
-						i++;
-					} else
-						break;
-				}
+			for(int i = 0;i<this.size();i++) {
+				if(!(i<iter)) break;
+				if(in.equals(this.get(i))) out.add(i);
 			}
 			return out;
 		}
@@ -450,7 +433,7 @@ public class SparkDB {
 		 * @param ns The new String value
 		 */
 		public void edit(int i, String ns) {
-			data.replace(i, ns);
+			this.set(i, ns);
 		}
 
 		/**
@@ -460,42 +443,16 @@ public class SparkDB {
 		 * @return The String value that is linked to the input index value
 		 */
 		public String get(int i) {
-			return data.get(i);
+			return this.get(i);
 		}
-
-		/**
-		 * Shifts all elements' indices up
-		 *
-		 * @param index Start index value (till the end of the list)
-		 */
-		private void syncAfterIndices(int index) {
-			for (int i = index; i < (data.size() + 1); i++) {
-				String temp = data.get(i);
-				data.remove(i);
-				data.put(i - 1, temp);
-			}
-		}
-
 		/**
 		 * Deletes an element
 		 *
 		 * @param i Target Index value to delete
 		 */
 		public void delete(int i) {
-			data.remove(i, data.get(i));
-			num--;
-			syncAfterIndices(i + 1);
+			this.remove(i);
 		}
-
-		@Override
-		public String toString() {
-			StringBuilder out = new StringBuilder();
-			for (String value : data.values()) {
-				out.append(value).append(" ");
-			}
-			return out.toString();
-		}
-
 	}
 
 	/**
