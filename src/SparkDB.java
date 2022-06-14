@@ -1,7 +1,7 @@
 
 /**
  * @author Morad Abdelrasheed Mokhtar Ali Gill
- * @version 2.0-stable
+ * @version 3.0-stable
  */
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -11,28 +11,89 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+/**
+ * SparkDB Object
+ */
 public class SparkDB {
+	/**
+	 * Maps column name with a list of corrisponding values
+	 */
 	public HashMap<String, HMList> Mapper = new HashMap<>();
+	/**
+	 * column names
+	 */
 	public ArrayList<String> Headers = new ArrayList<>();
+	/**
+	 * Number of entries (excluding the column name row)
+	 */
 	public int num_queries = 0;
+	/**
+	 * Number of columns
+	 */
 	public int num_header = 0;
+
+	/**
+	 * Create a database in memory
+	 *
+	 * @param headers every element is the header name
+	 */
+	public void create(ArrayList<String> headers) throws Exception {
+		StringBuilder rawHeader = new StringBuilder();
+		for (int i = 0; i < headers.size(); i++) {
+			boolean isLast = (headers.size() - 1) == i;
+			if (!isLast)
+				rawHeader.append("\"").append(headers.get(i)).append("\",");
+			else
+				rawHeader.append("\"").append(headers.get(i)).append("\"");
+		}
+		readFromString(rawHeader.toString());
+	}
+
+	/**
+	 * Reads encrypted CSV data from disk, decrypts it, then processes it.
+	 *
+	 * @param filename  The filename of the CSV file. <i>./data.csv</i> to point at
+	 *                  <b>data.csv</b> in the current directory.
+	 * @param Crypt_Key The decryption key
+	 */
+	public void readFromFile(String filename, String Crypt_Key) throws Exception {
+		BufferedInputStream BIF = new BufferedInputStream(new FileInputStream(new File(filename)), 4096);
+		readFromString(new String(AES.decrypt(BIF.readAllBytes(), Crypt_Key)));
+	}
+
 	/**
 	 * Reads CSV data from disk, then processes it.
-	 * @param filename		The filename of the CSV file. <i>./data.csv</i> to point at <b>data.csv</b> in the current directory.
+	 *
+	 * @param filename The filename of the CSV file. <i>./data.csv</i> to point at
+	 *                 <b>data.csv</b> in the current directory.
 	 * @see #readFromString(String)
 	 */
 	public void readFromFile(String filename) throws Exception {
 		BufferedInputStream BIF = new BufferedInputStream(new FileInputStream(new File(filename)), 4096);
 		readFromString(new String(BIF.readAllBytes()));
 	}
+
 	/**
 	 * Processes CSV content into data structure
-	 * @param data			The input lines. First line should be the header. New line delimiters are '\n' and '\r'.<br> Headers example: <i>"username","password"</i><br>Query Example: <i>"morad","123"</i><br>Input String Argument Example: <i><code>"username","password"\n"morad","123"</code></i>
+	 *
+	 * @param data The input lines. First line should be the header. New line
+	 *             delimiters are '\n' and '\r'.<br>
+	 *             Headers example: <i>"username","password"</i><br>
+	 *             Query Example: <i>"morad","123"</i><br>
+	 *             Input String Argument Example:
+	 *             <i><code>"username","password"\n"morad","123"</code></i>
 	 */
 	public void readFromString(String data) throws Exception {
 		zero();
@@ -71,15 +132,20 @@ public class SparkDB {
 		}
 		br.close();
 	}
+
 	/**
-	 * Get indices of the rows that apply certain rules.<br>HashMap argument [pass=123] will return all rows that have '123' in 'pass' column
-	 * @param in			Rules in form of Key:Column name and Value:Column Value
-	 * @param iter			How many indices should the function return
-	 * @return				ArrayList with all IDs applying rules passed in HashMap argument
+	 * Get indices of the rows that apply certain rules.<br>
+	 * HashMap argument [pass=123] will return all rows that have '123' in 'pass'
+	 * column
+	 *
+	 * @param in   Rules in form of Key:Column name and Value:Column Value
+	 * @param iter How many indices should the function return
+	 * @return ArrayList with all IDs applying rules passed in HashMap argument
 	 */
 	public ArrayList<Integer> getIDs(HashMap<String, String> in, int iter) {
 		ArrayList<Integer> out = new ArrayList<>();
-		if(in.size() < 1) throw new IllegalArgumentException("HashMap argument passed in getIDs(..) has no elements");
+		if (in.size() < 1)
+			throw new IllegalArgumentException("HashMap argument passed in getIDs(..) has no elements");
 		Entry<String, String> FirstElement = in.entrySet().iterator().next();
 		out.addAll(Mapper.get(FirstElement.getKey()).multipleGet(FirstElement.getValue(), iter));
 		for (Integer temp : out) {
@@ -95,20 +161,26 @@ public class SparkDB {
 		}
 		return out;
 	}
+
 	/**
-	 * See {@link #getIDs(HashMap, int)}. Grab maximum indices possible that apply certain rules.
-	 * @param in			Rules in form of Key:Column name and Value:Column Value
-	 * @return				ArrayList with all IDs applying rules passed in HashMap argument
+	 * See {@link #getIDs(HashMap, int)}. Grab maximum indices possible that apply
+	 * certain rules.
+	 *
+	 * @param in Rules in form of Key:Column name and Value:Column Value
+	 * @return ArrayList with all IDs applying rules passed in HashMap argument
 	 */
 	public ArrayList<Integer> getIDs(HashMap<String, String> in) {
 		return getIDs(in, Integer.MAX_VALUE);
 	}
+
 	/**
-	 * Gets column values from of a certain column name for rows that apply certain rules. See {@link #getIDs(HashMap, int)}.
-	 * @param input			Rules in form of Key:Column name and Value:Column Value
-	 * @param ColToFind		Target column name
-	 * @param iter			How many indices should the function return
-	 * @return				Column values of certain rows that apply certain rows
+	 * Gets column values from of a certain column name for rows that apply certain
+	 * rules. See {@link #getIDs(HashMap, int)}.
+	 *
+	 * @param input     Rules in form of Key:Column name and Value:Column Value
+	 * @param ColToFind Target column name
+	 * @param iter      How many indices should the function return
+	 * @return Column values of certain rows that apply certain rows
 	 */
 	public ArrayList<String> get(HashMap<String, String> input, String ColToFind, int iter) {
 		ArrayList<String> Query = new ArrayList<>();
@@ -118,51 +190,66 @@ public class SparkDB {
 		}
 		return Query;
 	}
+
 	/**
 	 * See {@link #get(HashMap, String, int)}. Grab maximum indices possible.
-	 * @param input			Rules in form of Key:Column name and Value:Column Value
-	 * @param ColToFind		Target column name
-	 * @return				Column values of certain rows that apply certain rows
+	 *
+	 * @param input     Rules in form of Key:Column name and Value:Column Value
+	 * @param ColToFind Target column name
+	 * @return Column values of certain rows that apply certain rows
 	 */
 	public ArrayList<String> get(HashMap<String, String> input, String ColToFind) {
 		return get(input, ColToFind, Integer.MAX_VALUE);
 	}
+
 	/**
 	 * See {@link #get(ArrayList)}
-	 * @param index			Target index
-	 * @return				The whole row in form of Key:Column name and Value:Column value
+	 *
+	 * @param index Target index
+	 * @return The whole row in form of Key:Column name and Value:Column value
 	 */
 	public HashMap<String, String> get(int index) {
-		return get(new ArrayList<Integer>() {{add(index);}}).get(0);
+		return get(new ArrayList<Integer>() {
+			{
+				add(index);
+			}
+		}).get(0);
 	}
+
 	/**
 	 * Gets multiple rows based on its index value
+	 *
 	 * @param indices Target Indices
-	 * @return		  The rows in form of Key:Column name and Value:Column value
+	 * @return The rows in form of Key:Column name and Value:Column value
 	 */
 	public ArrayList<HashMap<String, String>> get(ArrayList<Integer> indices) {
 		ArrayList<HashMap<String, String>> out = new ArrayList<>();
-		for(int index : indices) {
+		for (int index : indices) {
 			for (Entry<String, HMList> column : Mapper.entrySet()) {
 				HashMap<String, String> row = new HashMap<>();
-					row.put(column.getKey(), column.getValue().get(index));
+				row.put(column.getKey(), column.getValue().get(index));
 				out.add(row);
-		}
+			}
 		}
 		return out;
 	}
+
 	/**
 	 * Gets a whole column as a HMList.
-	 * @param column		Target Column name
-	 * @return				HMList that has all the column values
+	 *
+	 * @param column Target Column name
+	 * @return HMList that has all the column values
 	 */
 	public HMList getColumn(String column) {
 		return Mapper.get(column);
 	}
+
 	/**
-	 * Delete certain rows that apply certain rules. See {@link #getIDs(HashMap, int)}
-	 * @param input			Rules in form of Key:Column name and Value:Column Value
-	 * @param iter			How many rows that apply certain rules should be removed
+	 * Delete certain rows that apply certain rules. See
+	 * {@link #getIDs(HashMap, int)}
+	 *
+	 * @param input Rules in form of Key:Column name and Value:Column Value
+	 * @param iter  How many rows that apply certain rules should be removed
 	 */
 	public void delete(HashMap<String, String> input, int iter) {
 		ArrayList<Integer> indices = getIDs(input, iter);
@@ -173,16 +260,20 @@ public class SparkDB {
 		}
 		num_queries = num_queries - indices.size();
 	}
+
 	/**
 	 * See {@link #delete(HashMap, int)}. Delete all rows that apply certain rules
-	 * @param input			Rules in form of Key:Column name and Value:Column Value
+	 *
+	 * @param input Rules in form of Key:Column name and Value:Column Value
 	 */
 	public void delete(HashMap<String, String> input) {
 		delete(input, Integer.MAX_VALUE);
 	}
+
 	/**
 	 * Delete a row based on its index value
-	 * @param index			Target Index Value
+	 *
+	 * @param index Target Index Value
 	 */
 	public void delete(int index) {
 		for (Entry<String, HMList> column : Mapper.entrySet()) {
@@ -190,9 +281,11 @@ public class SparkDB {
 		}
 		num_queries--;
 	}
+
 	/**
 	 * Adds a row. See {@link #add(ArrayList)}
-	 * @param in			Row in form of Key: Column name and Value: Column value
+	 *
+	 * @param in Row in form of Key: Column name and Value: Column value
 	 */
 	public void add(HashMap<String, String> in) {
 		add(new ArrayList<HashMap<String, String>>() {
@@ -201,9 +294,12 @@ public class SparkDB {
 			}
 		});
 	}
+
 	/**
 	 * Adds multiple rows. Every element in variable 'in' is a row
-	 * @param in			List of rows to be added. See {@link #add(HashMap)} for more details on HashMap structure
+	 *
+	 * @param in List of rows to be added. See {@link #add(HashMap)} for more
+	 *           details on HashMap structure
 	 */
 	public void add(ArrayList<HashMap<String, String>> in) {
 		for (HashMap<String, String> cmd : in) {
@@ -219,11 +315,15 @@ public class SparkDB {
 		}
 		num_queries++;
 	}
+
 	/**
-	 * Modifies column values for a specific column name(s) for rows that apply certain rules. See {@link #getIDs(HashMap, int)}
-	 * @param in			Rules in form of Key:Column name and Value:Column Value
-	 * @param edit			Modification(s) to apply. In form of Key: Column name and Value: Column value
-	 * @param iter			How many indices to modify
+	 * Modifies column values for a specific column name(s) for rows that apply
+	 * certain rules. See {@link #getIDs(HashMap, int)}
+	 *
+	 * @param in   Rules in form of Key:Column name and Value:Column Value
+	 * @param edit Modification(s) to apply. In form of Key: Column name and Value:
+	 *             Column value
+	 * @param iter How many indices to modify
 	 */
 	public void modify(HashMap<String, String> in, HashMap<String, String> edit, int iter) {
 		ArrayList<Integer> indices = getIDs(in, iter);
@@ -233,24 +333,41 @@ public class SparkDB {
 			}
 		}
 	}
+
 	/**
-	 * See {@link #modify(HashMap, HashMap, int)}. Modifies all rows that apply certain rules
-	 * @param in		Rules in form of Key:Column name and Value:Column Value	
-	 * @param edit		Modification(s) to apply. In form of Key: Column name and Value: Column value
+	 * See {@link #modify(HashMap, HashMap, int)}. Modifies all rows that apply
+	 * certain rules
+	 *
+	 * @param in   Rules in form of Key:Column name and Value:Column Value
+	 * @param edit Modification(s) to apply. In form of Key: Column name and Value:
+	 *             Column value
 	 */
 	public void modify(HashMap<String, String> in, HashMap<String, String> edit) {
 		modify(in, edit, Integer.MAX_VALUE);
 	}
+
 	/**
 	 * Modifies a certain row based on its index value
-	 * @param index		Target index value
-	 * @param edit		Modification(s) to apply. In form of Key: Column name and Value: Column value
+	 *
+	 * @param index Target index value
+	 * @param edit  Modification(s) to apply. In form of Key: Column name and Value:
+	 *              Column value
 	 */
 	public void modify(int index, HashMap<String, String> edit) {
 		for (Entry<String, String> modification : edit.entrySet()) {
 			Mapper.get(modification.getKey()).edit(index, modification.getValue());
 		}
 	}
+
+	/**
+	 * Get the number of queries (size) of the database
+	 *
+	 * @return The number of queries, excluding headers
+	 */
+	public int size() {
+		return num_queries;
+	}
+
 	/**
 	 * Override for toString(). returns the current data structure in CSV format
 	 */
@@ -277,31 +394,38 @@ public class SparkDB {
 		}
 		return out.toString();
 	}
+
 	private void zero() {
 		num_queries = 0;
 		num_header = 0;
 		Mapper = new HashMap<>();
 		Headers = new ArrayList<>();
 	}
+
 	/**
 	 * A bidirectional list between index value and String value
+	 *
 	 * @author Morad Abdelrasheed Mokhtar Ali Gill
 	 */
 	public class HMList {
 		private LinkedHashMap<Integer, String> data = new LinkedHashMap<>();
 		private int num = 0;
+
 		/**
 		 * Adds an element
-		 * @param in	Element to be added
+		 *
+		 * @param in Element to be added
 		 */
 		public void add(String in) {
 			data.put(num, in);
 			num++;
 		}
+
 		/**
 		 * Get multiple indices that are linked with the same String value
-		 * @param in	The String value		
-		 * @param iter	How many indices to grab
+		 *
+		 * @param in   The String value
+		 * @param iter How many indices to grab
 		 * @return
 		 */
 		public ArrayList<Integer> multipleGet(String in, int iter) {
@@ -318,25 +442,31 @@ public class SparkDB {
 			}
 			return out;
 		}
+
 		/**
 		 * Edits an entry based on its index value
-		 * @param i		Target Index Value
-		 * @param ns	The new String value	
+		 *
+		 * @param i  Target Index Value
+		 * @param ns The new String value
 		 */
 		public void edit(int i, String ns) {
 			data.replace(i, ns);
 		}
+
 		/**
 		 * Get String value based on its index
-		 * @param i		Target Index Value
-		 * @return		The String value that is linked to the input index value
+		 *
+		 * @param i Target Index Value
+		 * @return The String value that is linked to the input index value
 		 */
 		public String get(int i) {
 			return data.get(i);
 		}
+
 		/**
 		 * Shifts all elements' indices up
-		 * @param index	Start index value (till the end of the list)
+		 *
+		 * @param index Start index value (till the end of the list)
 		 */
 		private void syncAfterIndices(int index) {
 			for (int i = index; i < (data.size() + 1); i++) {
@@ -345,24 +475,50 @@ public class SparkDB {
 				data.put(i - 1, temp);
 			}
 		}
+
 		/**
 		 * Deletes an element
-		 * @param i		Target Index value to delete
+		 *
+		 * @param i Target Index value to delete
 		 */
 		public void delete(int i) {
 			data.remove(i, data.get(i));
 			num--;
 			syncAfterIndices(i + 1);
 		}
-		
+
 		@Override
 		public String toString() {
-			String out = "";
-			for(String value : data.values()) {
-				out += value + " ";
+			StringBuilder out = new StringBuilder();
+			for (String value : data.values()) {
+				out.append(value).append(" ");
 			}
-			return out;
+			return out.toString();
 		}
 
+	}
+
+	/**
+	 * AES Library for encryption and decryption
+	 */
+	public class AES {
+		private static SecretKeySpec secretKey;
+		private static byte[] key;
+
+		public static void setKey(String myKey) throws Exception {
+			MessageDigest sha = null;
+			key = myKey.getBytes("UTF-8");
+			sha = MessageDigest.getInstance("SHA-256");
+			key = sha.digest(key);
+			key = Arrays.copyOf(key, 32);
+			secretKey = new SecretKeySpec(key, "AES");
+		}
+
+		public static byte[] decrypt(byte[] strToDecrypt, String secret) throws Exception {
+			setKey(secret);
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Arrays.copyOf(key, 16)));
+			return cipher.doFinal(Base64.getDecoder().decode(strToDecrypt));
+		}
 	}
 }
