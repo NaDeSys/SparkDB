@@ -390,7 +390,7 @@ public class SparkDB {
      *
      * @author Morad Abdelrasheed Mokhtar Ali Gill
      */
-    public class HMList extends ArrayList<String> {
+    public static class HMList extends ArrayList<String> {
         /**
          * Get multiple indices that are linked with the same String value
          *
@@ -401,7 +401,7 @@ public class SparkDB {
         public ArrayList<Integer> multipleGet(String in, int iter) {
             ArrayList<Integer> out = new ArrayList<>();
             for (int i = 0; i < this.size(); i++) {
-                if (!(i < iter)) break;
+                if (i >= iter) break;
                 if (in.equals(this.get(i))) out.add(i);
             }
             return out;
@@ -425,7 +425,7 @@ public class SparkDB {
          */
         @Override
         public String get(int i) {
-            return this.get(i);
+            return super.get(i);
         }
 
         /**
@@ -441,7 +441,7 @@ public class SparkDB {
     /**
      * AES Library for encryption and decryption
      */
-    public class AES {
+    public static class AES {
         private static SecretKeySpec secretKey;
         private static byte[] key;
 
