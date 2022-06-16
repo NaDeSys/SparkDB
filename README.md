@@ -26,7 +26,7 @@ You can find javadoc [here](https://nadesys.github.io/SparkDBDoc/SparkDB.html). 
 
 ## Contributors
 !!! This section is only modified by NaDeSys. !!!<br>
-[Morad Abdelrasheed](https://github.com/Zelakolase) - [Youssef Hegazy (Indirect Suggestion, accepted)](https://github.com/hegzploit) - [Omar Mohamed Khallaf (Indirect Suggestion, accepted)](https://github.com/OmarMohamedKhallaf)
+[Morad Abdelrasheed](https://github.com/Zelakolase) - [Youssef Hegazy (Indirect Suggestion, accepted)](https://github.com/hegzploit) - [Omar Mohamed Khallaf)](https://github.com/OmarMohamedKhallaf)
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/NaDeSys/SparkDB.svg)](https://starchart.cc/NaDeSys/SparkDB)
