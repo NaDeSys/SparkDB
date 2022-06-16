@@ -401,8 +401,9 @@ public class SparkDB {
         public ArrayList<Integer> multipleGet(String in, int iter) {
             ArrayList<Integer> out = new ArrayList<>();
             for (int i = 0; i < this.size(); i++) {
-                if (i >= iter) break;
-                if (in.equals(this.get(i))) out.add(i);
+                if (in.equals(this.get(i)) && i < iter) {
+                    out.add(i);
+                    iter++;
             }
             return out;
         }
