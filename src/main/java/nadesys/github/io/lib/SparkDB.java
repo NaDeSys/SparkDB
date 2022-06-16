@@ -398,14 +398,18 @@ public class SparkDB {
          * @param iter How many indices to grab
          * @return
          */
-        public ArrayList<Integer> multipleGet(String in, int iter) {
-            ArrayList<Integer> out = new ArrayList<>();
-            for (int i = 0; i < this.size(); i++) {
-                if (in.equals(this.get(i)) && i < iter) {
-                    out.add(i);
-            }
-            return out;
-        }
+		public ArrayList<Integer> multipleGet(String in, int iter) {
+			ArrayList<Integer> out = new ArrayList<>();
+			int current = 0;
+			for (int i = 0; i < this.size(); i++) {
+				if (in.equals(this.get(i)) && current <= iter)
+					{
+					out.add(i);
+					current++;
+					}
+			}
+			return out;
+		}
 
         /**
          * Edits an entry based on its index value
