@@ -403,7 +403,6 @@ public class SparkDB {
             for (int i = 0; i < this.size(); i++) {
                 if (in.equals(this.get(i)) && i < iter) {
                     out.add(i);
-                    iter++;
             }
             return out;
         }
