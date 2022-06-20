@@ -1,8 +1,4 @@
-package nadesys.github.io.lib;
-/**
- * @author Morad Abdelrasheed Mokhtar Ali Gill
- * @version v3.1-stable
- */
+
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -209,11 +205,11 @@ public class SparkDB {
     public ArrayList<HashMap<String, String>> get(ArrayList<Integer> indices) {
         ArrayList<HashMap<String, String>> out = new ArrayList<>();
         for (int index : indices) {
+            HashMap<String, String> row = new HashMap<>();
             for (Entry<String, HMList> column : Mapper.entrySet()) {
-                HashMap<String, String> row = new HashMap<>();
                 row.put(column.getKey(), column.getValue().get(index));
-                out.add(row);
             }
+            out.add(row);
         }
         return out;
     }
