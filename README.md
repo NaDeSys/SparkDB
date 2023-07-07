@@ -11,6 +11,9 @@
 ## Test it!
 You can run `$ javac main.java && java main` to test SparkDB
 
+## Documentation
+You can find javadoc [here](https://nadesys.github.io/SparkDBDoc/SparkDB.html). A code example is *src/main.java*. See also *doc/*
+
 ## But why?
 SQL statements are not an optimal way to communicate with a database. If not given enough sanitization, [it can lead to security issues](https://en.wikipedia.org/wiki/SQL_injection).<br>
 We have decided to invent the wheel for the good. You must learn SQL in order to work with it, SparkDB is a lot simpler. You don't have to learn SparkDB in order to work with it! SparkDB is perfect for small to mid-size databases for internal systems that need to be secure enough. **Maximum Entries is 2.147Billion**
@@ -21,8 +24,6 @@ We have decided to invent the wheel for the good. You must learn SQL in order to
   | **Support for java** | Indirect | Yes |
   | **Communication** | Network-based | Function calls |
   | **Storing format** | Key-Value pairs | Table |
-## Documentation
-You can find javadoc [here](https://nadesys.github.io/SparkDBDoc/SparkDB.html). A code example is *src/main.java*. See also *doc/*
 
 ## Contributors
 !!! This section is only modified by NaDeSys. !!!<br>
