@@ -19,5 +19,7 @@ public class App {
             put("product", "tomato");
         }}, "price");
         System.out.println("Tomato Price list: " + TomatoPrices);
+        /* Get all rows where the month is 5 */
+        
     }
 }
