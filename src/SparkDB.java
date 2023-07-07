@@ -141,6 +141,30 @@ public class SparkDB {
     }
 
     /**
+     * Get entire rows that apply certain rules
+     * @param input Rules in form of Key:Column name and Value:Column Value
+     * @param iter Number of rows the function should return
+     * @return ArrayList, where each element is a row. Each row is a HashMap where Key: Column name and Value: Column Value
+     */
+    public ArrayList<HashMap<String, String>> getRows(HashMap<String, String> input, int iter) {
+        ArrayList<HashMap<String, String>> rows = new ArrayList<>();
+        ArrayList<Integer> IDs = getIDs(input, iter);
+        for(Integer ID : IDs) {
+            rows.add(get(ID));
+        }
+        return rows;
+    }
+
+    /**
+     * {@link #getRow(HashMap, int)}
+     * @param input Rules in form of Key:Column name and Value:Column Value
+     * @return ArrayList, where each element is a row. Each row is a HashMap where Key: Column name and Value: Column Value
+     */
+    public ArrayList<HashMap<String, String>> getRows(HashMap<String, String> input) { 
+        return getRows(input, Integer.MAX_VALUE);
+    }
+
+    /**
      * See {@link #getIDs(HashMap, int)}. Grab maximum indices possible that apply
      * certain rules.
      *
