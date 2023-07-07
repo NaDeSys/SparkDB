@@ -14,21 +14,19 @@ You can run `$ javac main.java && java main` to test SparkDB
 ## Documentation
 You can find javadoc [here](https://nadesys.github.io/SparkDBDoc/SparkDB.html). A code example is *src/main.java*. See also *doc/*
 
-## But why?
-SQL statements are not an optimal way to communicate with a database. If not given enough sanitization, [it can lead to security issues](https://en.wikipedia.org/wiki/SQL_injection).<br>
-We have decided to invent the wheel for the good. You must learn SQL in order to work with it, SparkDB is a lot simpler. You don't have to learn SparkDB in order to work with it! SparkDB is perfect for small to mid-size databases for internal systems that need to be secure enough. **Maximum Entries is 2.147Billion**
-  ### Redis and SparkDB
-  | Feature | Redis | SparkDB |
-  | ---- | ---- | ---- |
-  | **CLI** | Yes | No |
-  | **Support for java** | Indirect | Yes |
-  | **Communication** | Network-based | Function calls |
-  | **Storing format** | Key-Value pairs | Table |
+## Philosophy
+There exists a lot of database solutions and types, such as (MY/MS)SQL, Redis, Postegres, etc.. . These database solutions are often an overkill for small projects and data manipulation. SparkDB is an abstract CSV-in-memory project, where every SparkDB object is a table. SparkDB offers a bloatware-free solution with an easy and minimal architecture.<br><br>
+With some coding, you can tame SparkDB to behave as a replacement for SQL, redis, or other database solutions. Write your own relational database, or in-memory cache with ease.<br><br>
+In short,
+- SparkDB is an abstract building block for database solutions.
+- SparkDB is used for scenarios where SQL-based/redis solutions are an overkill.
+- SparkDB does not have default Network-based communication, but it uses function calls.
+- SparkDB is NOT a relational database, but you can make your own relational implementation based on SparkDB.
+- SparkDB does not use a query language, but normal function calls that are understandable by any Java developer.
+- SparkDB is a minimal solution. Most of the time you have to use it as a building block to make a distributed database.
+- SparkDB only uses pure java. No frameworks or other libraries are required.
+
+Note: SparkDB table has a maximum of 2.147 billion rows. If your usecase requires more rows, try to divide/shard the data.
 
 ## Contributors
-!!! This section is only modified by NaDeSys. !!!<br>
 [Morad Abdelrasheed](https://github.com/Zelakolase) - [Youssef Hegazy (Indirect Suggestion, accepted)](https://github.com/hegzploit) - [Omar Mohamed Khallaf)](https://github.com/OmarMohamedKhallaf)
-
-## Stargazers over time
-[![Stargazers over time](https://starchart.cc/NaDeSys/SparkDB.svg)](https://starchart.cc/NaDeSys/SparkDB)
-
