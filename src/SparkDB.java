@@ -402,6 +402,14 @@ public class SparkDB {
         Mapper = new HashMap<>();
         Headers = new ArrayList<>();
     }
+	
+    /**
+     * Clear all rows from the table, leaving only the headers
+     */
+    public void clearRows() {
+        num_queries = 0;
+        for(String Header : Headers) Mapper.get(Header).clear();
+    }
 
     /**
      * A bidirectional list between index value and String value
